@@ -10,12 +10,23 @@
 | and give it the controller to call when that URI is requested.
 |
 */
+// Creamos la rutas nuevas que trndrán en cuenta los controllers programados en Controllers
 
-Route::get('/', 'WelcomeController@index');
+Route::resource('fabricantes','FabricanteController',['except'=>['create','edit']]);
+Route::resource('aviones','AvionController');
 
+Route::get('/', function(){
+
+	return "Bienvenido a API RESTful de Aviones.";
+
+});
+
+
+/*
 Route::get('home', 'HomeController@index');
 
 Route::controllers([
 	'auth' => 'Auth\AuthController',
 	'password' => 'Auth\PasswordController',
 ]);
+*/

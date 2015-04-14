@@ -31,7 +31,8 @@ class AvionSeeder extends Seeder {
 			// Se esteá creando una nueva fila en la tabla de Fabricantes (Active Record Eloquent ORM)
 
 			Avion::create([
-				'modelo'=>$faker->randomFloat(),
+				'modelo'=>$faker->word(),
+				'longitud'=>$faker->randomFloat(),
 				'capacidad'=>$faker->randomNumber(),
 				'velocidad'=>$faker->randomNumber(),
 				'alcance'=>$faker->randomNumber(),
