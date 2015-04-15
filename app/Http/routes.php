@@ -10,7 +10,7 @@
 | and give it the controller to call when that URI is requested.
 |
 */
-// Creamos la rutas nuevas que trndrán en cuenta los controllers programados en Controllers
+// Creamos la rutas nuevas que tendrán en cuenta los controllers programados en Controllers
 
 Route::resource('fabricantes','FabricanteController',['except'=>['create','edit']]);
 Route::resource('aviones','AvionController');

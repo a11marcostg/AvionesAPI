@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 use App\Fabricante;
+use Response;
 
 class FabricanteController extends Controller {
 
@@ -45,9 +46,24 @@ class FabricanteController extends Controller {
 	 *
 	 * @return Response
 	 */
-	public function store()
+	public function store(Request $request)
 	{
-		//
+		// Metodo llamado al hacer un POST.
+		// Comprobamos que recibimos todos los campos.
+
+		if (!$request->input('nombre')||!$request->input('direccion')||!$request->input('telefono')) {
+			// No estamos recibiendo los campos devolvemos error
+			return response()->json(['errors'=>Array(['code'=>422,'message'=>'Faltan datos necesarios para procesar el alta'])],422);
+		}
+
+		// Insertamos los datos en la tabla.
+
+		$nuevofabricante=Fabricante::create($request->all());
+
+		//Devolvemos la respuesta 201 de creado mas los datos del nuevo fabricante mas una cabecera de location + cabecera json
+		$respuesta= Response::make(json_encode(['data'=>$nuevofabricante]),201)->header('Location','http://www.dominio.local/fabricantes/'.$nuevofabricante->id)->header('Content-Type','application/json');
+		return $respuesta;
+
 	}
 
 	/**
@@ -78,10 +94,10 @@ class FabricanteController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function edit($id)
+	/*public function edit($id)
 	{
 		//
-	}
+	}*/
 
 	/**
 	 * Update the specified resource in storage.
@@ -91,7 +107,7 @@ class FabricanteController extends Controller {
 	 */
 	public function update($id)
 	{
-		//
+		
 	}
 
 	/**
@@ -102,7 +118,19 @@ class FabricanteController extends Controller {
 	 */
 	public function destroy($id)
 	{
-		//
+		$fabricante=Fabricante::find($id);
+
+		//Chequeamos si encontro un fabricante
+		if (!$fabricante) {
+
+			return response()->json(['errors'=>Array(['code'=>404,'message'=>'No se encuentra un fabricante con ese codigo'])],404);
+		}
+
+		//$fabricanteEliminar=Fabricante::destroy($id);
+
+		$fabricante->delete();
+		
+		return response()->json(['code'=>204,'message'=>'Se ha eliminado correctamente el fabricante'],204);
 	}
 
 }
