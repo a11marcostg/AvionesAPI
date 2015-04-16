@@ -5,6 +5,8 @@ use App\Http\Controllers\Controller;
 
 use Illuminate\Http\Request;
 
+use App\Avion;
+
 class AvionController extends Controller {
 
 	/**
@@ -14,71 +16,20 @@ class AvionController extends Controller {
 	 */
 	public function index()
 	{
-		//
+		return response()->json(['status'=>'ok','data'=>Avion::all()],200);
 	}
 
-	/**
-	 * Show the form for creating a new resource.
-	 *
-	 * @return Response
-	 */
-	public function create()
+	public function show($serie)
 	{
-		//
-	}
+		$avion=Avion::find($serie);
 
-	/**
-	 * Store a newly created resource in storage.
-	 *
-	 * @return Response
-	 */
-	public function store()
-	{
-		//
-	}
+		//Chequeamos si encontró un avion
+		if (!$avion) {
 
-	/**
-	 * Display the specified resource.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function show($id)
-	{
-		//
-	}
+			return response()->json(['errors'=>Array(['code'=>404,'message'=>'No se encuentra un avion con ese codigo'])],404);
+		}
 
-	/**
-	 * Show the form for editing the specified resource.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function edit($id)
-	{
-		//
-	}
-
-	/**
-	 * Update the specified resource in storage.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function update($id)
-	{
-		//
-	}
-
-	/**
-	 * Remove the specified resource from storage.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function destroy($id)
-	{
-		//
+		return response()->json(['status'=>'ok','data'=>$avion],200);
 	}
 
 }

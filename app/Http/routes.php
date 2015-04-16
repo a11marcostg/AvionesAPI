@@ -13,7 +13,14 @@
 // Creamos la rutas nuevas que tendrán en cuenta los controllers programados en Controllers
 
 Route::resource('fabricantes','FabricanteController',['except'=>['create','edit']]);
-Route::resource('aviones','AvionController');
+
+
+// Recurso anidado /fabricantes/xx/aviones
+Route::resource('fabricantes.aviones','FabricanteAvionController',['except'=>['create','edit','show']]);
+
+
+//Ruta /aviones/.... El resto de metodos los gestiona FabricantesAvion
+Route::resource('aviones','AvionController',['only'=>['index','show']]);
 
 Route::get('/', function(){
 
