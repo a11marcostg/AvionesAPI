@@ -56,7 +56,7 @@ class FabricanteController extends Controller {
 			return response()->json(['errors'=>Array(['code'=>422,'message'=>'Faltan datos necesarios para procesar el alta'])],422);
 		}
 
-		// Insertamos los datos en la tabla.
+		// Insertamos los datos en la tabla. 
 
 		$nuevofabricante=Fabricante::create($request->all());
 
@@ -105,9 +105,68 @@ class FabricanteController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function update($id)
+	public function update($id, Request $request)
 	{
+		//Vamos a actualizar un fabricante
+		// Comprobamos se el fabricante existe. En otro caso devolvemos error.
+
+		$fabricante=Fabricante::find($id);
+
+		if (!$fabricante) {
+			return response()->json(['errors'=>['code'=>404,'message'=>'No se encuetra un fabricante con ese código.']],404);
+		}
+
+		// Almacenamos en variables para facilitar el uso, los campos recibidos
+		$nombre=$request->input('nombre');
+		$direccion=$request->input('direccion');
+		$telefono=$request->input('telefono');
+
+		//Comprobamos si recibimos peticion patch(parcial) o put(total)
+
+		if ($request->method()=='PATCH') {
+			// Actualizacion parcial de datos
+			$bandera=false;
+			if ($nombre) {
+				$fabricante->nombre=$nombre;
+				$bandera=true;
+			}
+			if ($direccion) {
+				$fabricante->direccion=$direccion;
+				$bandera=true;
+			}
+			if ($telefono) {
+				$fabricante->telefono=$telefono;
+				$bandera=true;
+			}
+
+			if ($bandera) {
+				//actualizamos fabricante
+				$fabricante->save();
+				//Devolvemos un codigo 200 (ha habido modificaciones)
+				return response()->json(['status'=>'ok','data'=>$fabricante],200);
+			}else{
+
+				// Devolvemos codigo 304 Not Modified
+				return response()->json(['errors'=>['code'=>304,'message'=>'No se ha modificado ningún dato del fabricante']],304);
+			}
 		
+		}/// Acabamos la comprobacion de si era PATCH
+
+		// Metodo PUT actualizamos todos los campos
+		if (!$nombre||!$direccion||!$telefono) {
+		// Se devuelve error codigo 422 Unprocssable Entity
+
+			return response()->json(['errors'=>['code'=>422,'message'=>'Faltan valores para completar el procesamiento.']],422);
+
+		}
+		$fabricante->nombre=$nombre;
+		$fabricante->direccion=$direccion;
+		$fabricante->telefono=$telefono;
+
+		$fabricante->save();
+		return response()->json(['status'=>'ok','data'=>$fabricante],200);
+
+
 	}
 
 	/**
@@ -126,6 +185,23 @@ class FabricanteController extends Controller {
 			return response()->json(['errors'=>Array(['code'=>404,'message'=>'No se encuentra un fabricante con ese codigo'])],404);
 		}
 
+		//Antes de borrar el fabricante comprobamos si tiene aviones
+
+		$aviones=$fabricante->aviones;
+		//$aviones=$fabricante->aviones()->get();
+
+		if (sizeof($aviones)>0) {
+			
+			//Si quisieramos borrar todos los aviones del fabricante seria
+			//$fabricante->aviones->delete();
+
+			//Devolvemos un codigo 409 Conflict
+
+			return response()->json(['errors'=>Array(['code'=>409,'message'=>'Este fabricante posee aviones y no puede ser eliminado'])],409);
+		}
+
+
+		//Eliminamos el fabricante si no tiene aviones
 		//$fabricanteEliminar=Fabricante::destroy($id);
 
 		$fabricante->delete();

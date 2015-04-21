@@ -50,9 +50,90 @@ class FabricanteAvionController extends Controller {
 	}
 
 		
-	public function update($id)
+	public function update($idFabricante,$idAvion, Request $request)
 	{
-		//
+		// Comprobamos si el fabricante existe
+		$fabricante=Fabricante::find($idFabricante);
+
+		if (!$fabricante) {
+			return response()->json(['errors'=>['code'=>404,'message'=>'No se encuetra un fabricante con ese código.']],404);
+		}
+
+		//Comprobamos si el avion que buscamos es el de ese fabricante
+
+		$avion = $fabricante->aviones()->find($idAvion);
+
+		if (!$avion) {
+			return response()->json(['errors'=>['code'=>404,'message'=>'No se encuetra un avion con ese código asociado al fabricante.']],404);
+		}
+
+		//Listado de campos recibidos del formulario de actualizacion
+		$modelo=$request->input('modelo');
+		$longitud=$request->input('longitud');
+		$capacidad=$request->input('capacidad');
+		$velocidad=$request->input('velocidad');
+		$alcance=$request->input('alcance');
+
+		// Comprobamos el metodo si es PATCH O PUT
+
+		if ($request->method()=='PATCH') {
+			$bandera=false;
+			//Comprobamos campo a campo si hemos recibido datos
+			if ($modelo) {
+				$avion->modelo=$modelo;
+				$bandera=true;
+			}
+			if ($longitud) {
+				$avion->longitud=$longitud;
+				$bandera=true;
+			}
+			if ($capacidad) {
+				$avion->capacidad=$capacidad;
+				$bandera=true;
+			}
+			if ($velocidad) {
+				$avion->velocidad=$velocidad;
+				$bandera=true;
+			}
+			if ($alcance) {
+				$avion->alcance=$alcance;
+				$bandera=true;
+			}
+			if ($bandera) {
+				//actualizamos fabricante
+				$avion->save();
+				//Devolvemos un codigo 200 (ha habido modificaciones)
+				return response()->json(['status'=>'ok','data'=>$avion],200);
+			}else{
+
+				// Devolvemos codigo 304 Not Modified
+				return response()->json(['errors'=>['code'=>304,'message'=>'No se ha modificado ningún dato del avion']],304);
+			}
+
+
+		}/// Acabamos la comprobacion de si era PATCH
+
+		// Metodo PUT actualizamos todos los campos
+		if (!$modelo||!$longitud||!$capacidad||!$velocidad||!$alcance) {
+		// Se devuelve error codigo 422 Unprocssable Entity
+
+			return response()->json(['errors'=>['code'=>422,'message'=>'Faltan valores para completar el procesamiento.']],422);
+
+		}
+
+		// Actualizamos el modelo avion
+		$avion->modelo=$modelo;		
+		$avion->longitud=$longitud;
+		$avion->capacidad=$capacidad;
+		$avion->velocidad=$velocidad;
+		$avion->alcance=$alcance;
+	
+
+		$avion->save();
+		return response()->json(['status'=>'ok','data'=>$avion],200);
+
+
+
 	}
 
 	

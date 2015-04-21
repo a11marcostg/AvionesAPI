@@ -10,24 +10,40 @@
 | and give it the controller to call when that URI is requested.
 |
 */
-// Creamos la rutas nuevas que tendrán en cuenta los controllers programados en Controllers
+// Versionado de la API 
+// Las rutas quedarán alfo como /api/v1.0/rutas existentes....
+Route::group(array('prefix'=>'api/v1.0'),function(){
 
-Route::resource('fabricantes','FabricanteController',['except'=>['create','edit']]);
+
+
+
+// Creamos la rutas nuevas que tendrán en cuenta los controllers programados en Controllers
+//Ruta /fabricantes/....
+	Route::resource('fabricantes','FabricanteController',['except'=>['create','edit']]);
 
 
 // Recurso anidado /fabricantes/xx/aviones
-Route::resource('fabricantes.aviones','FabricanteAvionController',['except'=>['create','edit','show']]);
+	Route::resource('fabricantes.aviones','FabricanteAvionController',['except'=>['create','edit','show']]);
 
 
-//Ruta /aviones/.... El resto de metodos los gestiona FabricantesAvion
-Route::resource('aviones','AvionController',['only'=>['index','show']]);
+//Ruta /aviones/.... El resto de metodos los gestiona FabricanteAvionController
+	Route::resource('aviones','AvionController',['only'=>['index','show']]);
 
-Route::get('/', function(){
 
-	return "Bienvenido a API RESTful de Aviones.";
+
+	Route::get('/', function(){
+
+		return "Bienvenido a API RESTful de Aviones.";
+
+	});
 
 });
 
+Route::get('/', function(){
+
+		return "<a href='http://www.dominio.local/api/v1.0'>Acceda a la version 1.0 de la API RESTful de Aviones</a>";
+
+});
 
 /*
 Route::get('home', 'HomeController@index');
