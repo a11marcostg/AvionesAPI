@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 use App\Avion;
+// Activamos el uso de las funciones caché
+use Illuminate\Support\Facades\Cache;
 
 class AvionController extends Controller {
 
@@ -16,7 +18,13 @@ class AvionController extends Controller {
 	 */
 	public function index()
 	{
-		return response()->json(['status'=>'ok','data'=>Avion::all()],200);
+		$aviones=Cache::remember('cacheaviones',15/60,function(){
+
+			return Avion::all();
+		});
+
+		return response()->json(['status'=>'ok','data'=>$aviones],200);
+		//return response()->json(['status'=>'ok','data'=>Avion::all()],200);
 	}
 
 	public function show($serie)

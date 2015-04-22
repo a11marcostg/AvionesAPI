@@ -8,6 +8,9 @@ use Illuminate\Http\Request;
 use App\Fabricante;
 use Response;
 
+// Activamos el uso de las funciones caché
+use Illuminate\Support\Facades\Cache;
+
 class FabricanteController extends Controller {
 
 	/**
@@ -17,15 +20,21 @@ class FabricanteController extends Controller {
 	 */
 	public function index()
 	{
-		//return "En el index del fabricante";
-		//Devolvemos un json con todos los frabricantes
+		// return "En el index del fabricante";
+		// Devolvemos un json con todos los frabricantes
+		// Caché se actualizará con nuevos datos cada 15 segundos
+		// cachefabricantes es la clave con la que se almacenaran los registros obtenidos de Fabricante::all();
+		$fabricantes=Cache::remember('cachefabricantes',15/60,function(){
 
+			return Fabricante::all();
+		});
 		//return Fabricante::all(); ----esto e unha forma
 
-		//Para devolver un json con codigo de respuesta HTTP
+		//Para devolver un json con codigo de respuesta HTTP sin caché
+		//return response()->json(['status'=>'ok','data'=>Fabricante::all()],200);
 
-		return response()->json(['status'=>'ok','data'=>Fabricante::all()],200);
-
+		//Devolvemos json usando caché
+		return response()->json(['status'=>'ok','data'=>$fabricantes],200);
 
 	}
 
