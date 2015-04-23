@@ -15,23 +15,28 @@ use Illuminate\Support\Facades\Cache;
 
 class FabricanteAvionController extends Controller {
 
-	
+	public function __construct(){
+
+		$this->middleware('auth.basic',['only'=>['store','update','destroy']]);
+
+	}
 	public function index($idFabricante)
 	{
 		// Mostramos todos los aviones de un fabricante
 
 		$fabricante=Fabricante::find($idFabricante);
+
 		if (!$fabricante) {
 			return response()->json(['errors'=>Array(['code'=>404,'message'=>'No se encuentra un fabricante con ese codigo'])],404);
 		}
 
-		$avionesFabricante=Cache::remember('cacheavionesFabricante',15/60,function(){
+		$avionesFabricante=Cache::remember('cacheavionesFabricante',15/60,function()use($fabricante){
 
 			return $fabricante->aviones()->get();
 		});
 
 		return response()->json(['status'=>'ok','data'=>$avionesFabricante],200);
-		// return response()->json(['status'='ok','data'=>$fabricante->aviones->get()],200);
+		//return response()->json(['status'=>'ok','data'=>$fabricante->aviones()->get()],200);
 
 
 	}
